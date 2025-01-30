@@ -46,6 +46,10 @@ function App() {
         {/* Fixed Background */}
         <div className="fixed inset-0 bg-gradient-to-b from-gray-900 to-green-900" />
         
+        {/* Fixed overlay elements */}
+        <Cursor />
+        <Navbar activeSection={currentSection} />
+
         <div className="fixed inset-0">
           <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
             <ScrollControls pages={4} damping={0.2}>
@@ -55,10 +59,6 @@ function App() {
               </Scroll>
               <Scroll html style={{ width: '100%' }}>
                 <div className="absolute top-0 left-0 w-full">
-                  {/* Fixed Elements */}
-                  <Cursor />
-                  <Navbar activeSection={currentSection} />
-
                   {/* Content Sections */}
                   <HeroSection />
                   <FeaturesSection />
