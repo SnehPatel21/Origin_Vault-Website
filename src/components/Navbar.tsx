@@ -119,7 +119,7 @@ export function Navbar({ activeSection, onNavigate }: NavbarProps) {
             onClick={(e) => handleNavClick(e, 'home')}
             className="text-2xl font-bold text-white"
           >
-            FoodChain
+            Origin Vault
           </a>
 
           {/* Desktop Menu */}
