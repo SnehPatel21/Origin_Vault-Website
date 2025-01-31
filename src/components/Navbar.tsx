@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Menu, X, Home, Layers, Leaf, Mail, LucideIcon } from 'lucide-react';
+import img from "/assets/clean.png";
 
 interface NavbarProps {
   activeSection: string;
@@ -119,7 +120,7 @@ export function Navbar({ activeSection, onNavigate }: NavbarProps) {
             onClick={(e) => handleNavClick(e, 'home')}
             className="text-2xl font-bold text-white"
           >
-            Origin Vault
+            <img src={img} height= "100" width="200"></img>
           </a>
 
           {/* Desktop Menu */}
