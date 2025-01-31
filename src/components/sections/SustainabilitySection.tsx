@@ -1,4 +1,3 @@
-// src/components/sections/SustainabilitySection.tsx
 import React from 'react';
 import { Leaf, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -8,6 +7,7 @@ export const SustainabilitySection = () => {
     <section id="sustainability" className="relative min-h-screen py-24">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center gap-12">
+          {/* Left Side Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -25,11 +25,13 @@ export const SustainabilitySection = () => {
               Our blockchain solution helps reduce food waste, optimize transportation routes, and promote sustainable farming practices through data-driven insights.
             </p>
             <img
-              src="/api/placeholder/600/400"
-              alt="Sustainable Farming"
-              className="rounded-lg shadow-xl w-full"
+              src="https://images.pexels.com/photos/844124/pexels-photo-844124.jpeg?auto=compress&cs=tinysrgb&w=600"
+              alt="Blockchain in Sustainable Farming"
+              className="rounded-lg shadow-xl w-full object-cover h-[300px]"
             />
           </motion.div>
+
+          {/* Right Side Content */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -37,9 +39,9 @@ export const SustainabilitySection = () => {
             className="flex-1"
           >
             <img
-              src="/api/placeholder/600/400"
-              alt="Supply Chain Technology"
-              className="rounded-lg shadow-xl mb-8 w-full"
+              src="https://images.pexels.com/photos/30400302/pexels-photo-30400302/free-photo-of-colorful-fresh-produce-at-farmers-market.png?auto=compress&cs=tinysrgb&w=600"
+              alt="Food Supply Chain Technology"
+              className="rounded-lg shadow-xl mb-8 w-full object-cover h-[300px]"
             />
             <div className="bg-white/5 backdrop-blur-lg p-8 rounded-xl">
               <h3 className="text-2xl font-semibold text-white mb-4">

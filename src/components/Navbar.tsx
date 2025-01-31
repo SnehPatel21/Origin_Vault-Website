@@ -1,85 +1,112 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Menu, X, Home, Layers, Leaf, Mail, LucideIcon } from 'lucide-react';
 
 interface NavbarProps {
   activeSection: string;
+  onNavigate: (sectionId: string) => void;
 }
 
-interface NavLink {
+type NavLinkType = {
   name: string;
   href: string;
   icon: LucideIcon;
   id: string;
   hasIndicator?: boolean;
-}
+};
 
-export function Navbar({ activeSection }: NavbarProps) {
+const navLinks = [
+  { 
+    name: 'Home', 
+    href: '#home', 
+    icon: Home, 
+    id: 'home', 
+    hasIndicator: false 
+  },
+  { 
+    name: 'Features', 
+    href: '#features', 
+    icon: Layers, 
+    id: 'features', 
+    hasIndicator: false 
+  },
+  { 
+    name: 'Sustainability', 
+    href: '#sustainability', 
+    icon: Leaf, 
+    id: 'sustainability',
+    hasIndicator: true 
+  },
+  { 
+    name: 'Contact', 
+    href: '#contact', 
+    icon: Mail, 
+    id: 'contact', 
+    hasIndicator: false 
+  },
+] satisfies NavLinkType[];
+
+export function Navbar({ activeSection, onNavigate }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const navContainerRef = useRef<HTMLDivElement | null>(null);
   const [indicatorStyle, setIndicatorStyle] = useState({ width: 0, left: 0 });
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+  const handleScroll = useCallback(() => {
+    setIsScrolled(window.scrollY > 50);
   }, []);
 
   useEffect(() => {
-    const updateIndicator = () => {
-      const activeElement = navRefs.current[activeSection];
-      const container = navContainerRef.current;
-      
-      if (activeElement && container) {
-        const containerRect = container.getBoundingClientRect();
-        const textElement = activeElement.querySelector('span');
-        if (textElement) {
-          const textRect = textElement.getBoundingClientRect();
-          setIndicatorStyle({
-            width: textRect.width,
-            left: textRect.left - containerRect.left
-          });
-        }
-      }
-    };
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
 
+  const updateIndicator = useCallback(() => {
+    const activeElement = navRefs.current[activeSection];
+    const container = navContainerRef.current;
+    
+    if (activeElement && container) {
+      const containerRect = container.getBoundingClientRect();
+      const textElement = activeElement.querySelector('span');
+      if (textElement) {
+        const textRect = textElement.getBoundingClientRect();
+        setIndicatorStyle({
+          width: textRect.width,
+          left: textRect.left - containerRect.left
+        });
+      }
+    }
+  }, [activeSection]);
+
+  useEffect(() => {
     updateIndicator();
     window.addEventListener('resize', updateIndicator);
     return () => window.removeEventListener('resize', updateIndicator);
-  }, [activeSection]);
+  }, [updateIndicator]);
 
-  const scrollToSection = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      const navHeight = 80;
-      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-      const offsetPosition = elementPosition - navHeight;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
+  const handleNavClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    const sections = ['home', 'features', 'sustainability', 'contact'];
+    const index = sections.indexOf(id);
+    if (index !== -1) {
+      const scrollContainer = document.querySelector('.drei-scroll-container');
+      if (scrollContainer) {
+        const targetScroll = index / (sections.length - 1);
+        // Find the scroll element within drei's container
+        const scrollElement = scrollContainer.querySelector('[data-scroll]') as HTMLElement;
+        if (scrollElement) {
+          const maxScroll = scrollElement.scrollHeight - scrollElement.clientHeight;
+          scrollElement.scrollTo({
+            top: targetScroll * maxScroll,
+            behavior: 'smooth'
+          });
+        }
+      }
     }
+    onNavigate(id);
     setIsMenuOpen(false);
-  };
-
-  const navLinks: NavLink[] = [
-    { name: 'Home', href: '#home', icon: Home, id: 'home' },
-    { name: 'Features', href: '#features', icon: Layers, id: 'features' },
-    { 
-      name: 'Sustainability', 
-      href: '#sustainability', 
-      icon: Leaf, 
-      id: 'sustainability',
-      hasIndicator: true 
-    },
-    { name: 'Contact', href: '#contact', icon: Mail, id: 'contact' },
-  ];
+  }, [onNavigate]);
 
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
@@ -87,7 +114,11 @@ export function Navbar({ activeSection }: NavbarProps) {
     }`}>
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-20">
-          <a href="#" className="text-2xl font-bold text-white">
+          <a 
+            href="#home"
+            onClick={(e) => handleNavClick(e, 'home')}
+            className="text-2xl font-bold text-white"
+          >
             FoodChain
           </a>
 
@@ -101,10 +132,7 @@ export function Navbar({ activeSection }: NavbarProps) {
                     <a
                       ref={el => navRefs.current[link.id] = el}
                       href={link.href}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        scrollToSection(link.href);
-                      }}
+                      onClick={(e) => handleNavClick(e, link.id)}
                       className={`relative text-gray-300 hover:text-white transition-colors flex items-center gap-2 px-4 py-2 group ${
                         activeSection === link.id ? 'text-white' : ''
                       }`}
@@ -118,7 +146,6 @@ export function Navbar({ activeSection }: NavbarProps) {
                   </div>
                 );
               })}
-              {/* Animated underline indicator */}
               <div
                 className="absolute bottom-0 h-0.5 bg-green-400 transition-all duration-300"
                 style={{
@@ -155,10 +182,7 @@ export function Navbar({ activeSection }: NavbarProps) {
                 <div key={link.name} className="relative">
                   <a
                     href={link.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      scrollToSection(link.href);
-                    }}
+                    onClick={(e) => handleNavClick(e, link.id)}
                     className={`relative text-gray-300 hover:text-white transition-colors flex items-center gap-2 ${
                       activeSection === link.id ? 'text-white' : ''
                     }`}
